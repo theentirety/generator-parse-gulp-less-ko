@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Mixins Stylesheet
+   mixins.less
+   ========================================================================== */
+
+.<%= site_prefix %>-spin (@duration) {
+    -webkit-animation: spin @duration infinite linear;
+    -moz-animation: spin @duration infinite linear;
+    -ms-animation: spin @duration infinite linear;
+    -o-animation: spin @duration infinite linear;
+    animation: spin @duration infinite linear;
+}
+
+.<%= site_prefix %>-spinner {
+  position: absolute;
+  .<%= site_prefix %>-spin(.5s);
+  color: fade(#FFF, 80%);
+  display: inline-block;
+  margin-top: 3px;
+}
