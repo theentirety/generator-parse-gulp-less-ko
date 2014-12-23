@@ -19,7 +19,7 @@ gulp.task('styles', ['vendor-styles'], function () {
     .pipe($.if(deployMode, gulp.dest(distFolder + '/styles')))
     .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles')))
     .pipe($.size())
-    // .pipe($.if(!deployMode, $.connect.reload()))
+    .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -32,7 +32,7 @@ gulp.task('vendor-styles', function () {
     .pipe($.if(deployMode, gulp.dest(distFolder + '/styles/vendor.css')))
     .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles/vendor.css')))
     .pipe($.size())
-    // .pipe($.if(!deployMode, $.connect.reload()))
+    .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -58,7 +58,7 @@ gulp.task('scripts', function () {
   .pipe($.if(deployMode, gulp.dest(distFolder + '/scripts')))
   .pipe($.if(!deployMode, gulp.dest(buildFolder + '/scripts')))
   .pipe($.size())
-  // .pipe($.if(!deployMode, $.connect.reload()))
+  .pipe($.if(!deployMode, $.connect.reload()))
   .on('error', $.util.log);
 });
 
@@ -80,7 +80,7 @@ gulp.task('templates', function () {
     .pipe($.concat('templates.html'))
     .pipe($.if(deployMode, gulp.dest(distFolder)))
     .pipe($.if(!deployMode, gulp.dest(buildFolder)))
-    // .pipe($.if(!deployMode, $.connect.reload()))
+    .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -116,7 +116,7 @@ gulp.task('fonts', function () {
     .pipe($.if(deployMode, gulp.dest(distFolder + '/fonts')))
     .pipe($.if(!deployMode, gulp.dest(buildFolder + '/fonts')))
     .pipe($.size())
-    // .pipe($.if(!deployMode, $.connect.reload()))
+    .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -139,7 +139,7 @@ gulp.task('build', ['styles', 'html', 'scripts', 'vendor', 'images', 'fonts']);
 
 // Dev Server
 
-gulp.task('dev', ['build', 'connect', 'lint']);
+gulp.task('dev', ['build', 'watch', 'lint']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
@@ -152,12 +152,39 @@ gulp.task('deploy', ['clean-deploy'], function () {
   gulp.start('build');
 });
 
-// Connect
+// // Connect
 gulp.task('connect', function() {
-  gulp.src(buildFolder)
-    .pipe($.webserver({
-      port: 9000,
-      livereload: true,
-      open: true
-    }));
+  $.connect.server({
+    root: buildFolder,
+    livereload: true,
+    port: 9000
+  });
+});
+
+// Watch
+gulp.task('watch', ['connect'], function () {
+    // Watch for changes in `app` folder
+    gulp.watch([
+        'app/less/**/*.less',
+        'app/scripts/**/*.js',
+        'app/images/**/*',
+        'app/templates/**/*.html',
+        'app/fonts/fonts/**/*'
+    ], $.connect.reload);
+
+
+    // Watch .less files
+    gulp.watch('app/less/**/*.less', ['styles']);
+
+    // Watch .js files
+    gulp.watch('app/scripts/**/*.js', ['scripts']);
+
+    // Watch image files
+    gulp.watch('app/images/**/*', ['images']);
+
+    // Watch .html files
+    gulp.watch('app/**/*.html', ['templates']);
+
+    // Watch .font files
+    gulp.watch('app/fonts/fonts/**/*', ['fonts']);
 });
