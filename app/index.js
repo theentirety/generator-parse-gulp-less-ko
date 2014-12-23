@@ -45,6 +45,20 @@ module.exports = yeoman.generators.Base.extend({
         name: 'parseGoInstall',
         message: 'Please go create your app on Parse.com. We\'ll wait here... ready?',
         default: true
+    },{
+        when: function (response) {
+          return response.parseGoInstall;
+        },
+        type: 'confirm',
+        name: 'parseAppId',
+        message: 'What is the Parse.com application id?'
+    },{
+        when: function (response) {
+          return response.parseGoInstall;
+        },
+        type: 'confirm',
+        name: 'parseMasterKey',
+        message: 'What is the Parse.com master key?'
     }
     ];
 
@@ -54,6 +68,8 @@ module.exports = yeoman.generators.Base.extend({
         this.parseInstallCLI = props.parseInstallCLI;
         this.parseCLIInstalled = props.parseCLIInstalled;
         this.parseAppName = this._.classify(props.appName);
+        this.parseAppId = props.parseAppId;
+        this.parseMasterKey = props.parseMasterKey;
 
         done();
     }.bind(this));
@@ -68,6 +84,7 @@ module.exports = yeoman.generators.Base.extend({
       this.mkdir(this.destinationPath('app/fonts/packages'));
       this.mkdir(this.destinationPath('app/images'));
       this.mkdir(this.destinationPath('app/less'));
+      this.mkdir(this.destinationPath('app/less/vendor'));
       this.mkdir(this.destinationPath('app/less/modules'));
       this.mkdir(this.destinationPath('app/scripts'));
       this.mkdir(this.destinationPath('app/scripts/modules'));
@@ -81,21 +98,24 @@ module.exports = yeoman.generators.Base.extend({
 
       var context = {
           site_name: this.appName,
-          site_prefix: this._.classify(this.appName)
+          site_prefix: this._.classify(this.appName),
+          parse_appid: this.parseAppId,
+          parse_masterkey: this.parseMasterKey
       };
 
       this.fs.copy(this.templatePath('_package.json'), this.destinationPath('package.json'));
       this.fs.copy(this.templatePath('_bower.json'), this.destinationPath('bower.json'));
       this.fs.copy(this.templatePath('_gulpfile.js'), this.destinationPath('gulpfile.js'));
 
-      this.fs.copy(this.templatePath('_main.js'), this.destinationPath('app/scripts/main.js'));
       this.fs.copy(this.templatePath('_app.js'), this.destinationPath('app/scripts/app.js'));
+      this.template(this.templatePath('_main.js'), this.destinationPath('app/scripts/main.js'), context);
+
 
       this.fs.copy(this.templatePath('_app.less'), this.destinationPath('app/less/app.less'));
-      this.fs.copy(this.templatePath('_base.less'), this.destinationPath('app/less/_base.less'));
       this.fs.copy(this.templatePath('_fonts.less'), this.destinationPath('app/less/fonts.less'));
 
       this.template(this.templatePath('_mixins.less'), this.destinationPath('app/less/mixins.less'), context);
+      this.template(this.templatePath('_base.less'), this.destinationPath('app/less/_base.less'), context);
 
       this.template(this.templatePath('_auth.html'), this.destinationPath('app/templates/auth.html'), context);
       this.template(this.templatePath('_auth.less'), this.destinationPath('app/less/modules/auth.less'), context);

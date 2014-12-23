@@ -9,38 +9,31 @@ var deployMode = false;
 // Load plugins
 var $ = require('gulp-load-plugins')();
 var mainBowerFiles = require('main-bower-files');
-
+console.log($)
 // Styles
 gulp.task('styles', ['vendor-styles'], function () {
-  return gulp.src('app/less/app.less')
-    // .pipe($.less({
-    //   style: 'expanded',
-    //   loadPath: ['bower_components']
-    // }))
+  gulp.src('app/less/app.less')
+    .pipe($.less())
     .pipe($.autoprefixer('last 1 version'))
-    .pipe($.csso())
+    .pipe($.if(deployMode, $.csso()))
     .pipe($.if(deployMode, gulp.dest(distFolder + '/styles')))
     .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles')))
     .pipe($.size())
-    .pipe($.if(!deployMode, $.connect.reload()))
+    // .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
 // Styles
 gulp.task('vendor-styles', function () {
-  // return gulp.src()
-  //   pipe($.less({
-  //     style: 'expanded',
-  //     loadPath: ['bower_components']
-  //   }))
-  //   .pipe($.concat('vendor.css'))
-  //   .pipe($.autoprefixer('last 1 version'))
-  //   .pipe($.csso())
-  //   .pipe($.if(deployMode, gulp.dest(distFolder + '/styles')))
-  //   .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles')))
-  //   .pipe($.size())
-  //   .pipe($.if(!deployMode, $.connect.reload()))
-  //   .on('error', $.util.log);
+  gulp.src('app/less/vendor/*.less')
+    .pipe($.less())
+    .pipe($.autoprefixer('last 1 version'))
+    .pipe($.if(deployMode, $.csso()))
+    .pipe($.if(deployMode, gulp.dest(distFolder + '/styles/vendor.css')))
+    .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles/vendor.css')))
+    .pipe($.size())
+    // .pipe($.if(!deployMode, $.connect.reload()))
+    .on('error', $.util.log);
 });
 
 // Vendor Scripts
@@ -65,7 +58,7 @@ gulp.task('scripts', function () {
   .pipe($.if(deployMode, gulp.dest(distFolder + '/scripts')))
   .pipe($.if(!deployMode, gulp.dest(buildFolder + '/scripts')))
   .pipe($.size())
-  .pipe($.if(!deployMode, $.connect.reload()))
+  // .pipe($.if(!deployMode, $.connect.reload()))
   .on('error', $.util.log);
 });
 
@@ -87,7 +80,7 @@ gulp.task('templates', function () {
     .pipe($.concat('templates.html'))
     .pipe($.if(deployMode, gulp.dest(distFolder)))
     .pipe($.if(!deployMode, gulp.dest(buildFolder)))
-    .pipe($.if(!deployMode, $.connect.reload()))
+    // .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -118,12 +111,12 @@ gulp.task('fonts', function () {
   return gulp.src([
     'app/fonts/fonts/**/*',
     '!app/fonts/icons',
-    '!app/fonts/demos'
+    '!app/fonts/packages'
     ])
     .pipe($.if(deployMode, gulp.dest(distFolder + '/fonts')))
     .pipe($.if(!deployMode, gulp.dest(buildFolder + '/fonts')))
     .pipe($.size())
-    .pipe($.if(!deployMode, $.connect.reload()))
+    // .pipe($.if(!deployMode, $.connect.reload()))
     .on('error', $.util.log);
 });
 
@@ -146,56 +139,29 @@ gulp.task('build', ['styles', 'html', 'scripts', 'vendor', 'images', 'fonts']);
 
 // Dev Server
 
-gulp.task('dev', ['styles', 'html', 'scripts', 'vendor', 'images', 'fonts', 'connect', 'watch', 'lint']);
+gulp.task('dev', ['build', 'connect', 'lint']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
-    gulp.start('dev');
+  gulp.start('dev');
 });
 
 // Deploy task
 gulp.task('deploy', ['clean-deploy'], function () {
   deployMode = true;
-    gulp.start('build');
+  gulp.start('build');
 });
 
 // Connect
-gulp.task('connect', $.connect.server({
-  root: __dirname + '/' + buildFolder,
-  port: 9000,
-  livereload:{
-    port: 35729
-  },
-  open: {
-    file: 'index.html',
-    browser: 'Google Chrome'
-  },
-}));
-
-// Watch
-gulp.task('watch', ['connect'], function () {
-    // Watch for changes in `app` folder
-    gulp.watch([
-        'app/less/**/*.less',
-        'app/scripts/**/*.js',
-        'app/images/**/*',
-        'app/templates/**/*.html',
-        'app/fonts/fonts/**/*'
-    ], $.connect.reload);
-
-
-    // Watch .less files
-    gulp.watch('app/less/**/*.less', ['styles']);
-
-    // Watch .js files
-    gulp.watch('app/scripts/**/*.js', ['scripts']);
-
-    // Watch image files
-    gulp.watch('app/images/**/*', ['images']);
-
-    // Watch .html files
-    gulp.watch('app/**/*.html', ['templates']);
-
-    // Watch .font files
-    gulp.watch('app/fonts/fonts/**/*', ['fonts']);
+gulp.task('connect', function() {
+  gulp.src(buildFolder)
+    .pipe($.webserver({
+      directoryListing: {
+        enable: true,
+        path: buildFolder
+      },
+      port: 9000,
+      livereload: true,
+      open: true
+    }));
 });
