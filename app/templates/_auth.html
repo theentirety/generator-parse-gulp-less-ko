@@ -1,4 +1,8 @@
 <div class="<%= site_prefix %>-auth" data-bind="page: { id: '?', nameParam: 'signin' }, visible: !auth.currentUser()">
-    <h1 class="<%= site_prefix %>-auth-h1 row">Sign in with Facebook</h1>
-    <button class="button" data-bind="click: auth.signin">Sign in</button>
+<% if (facebookAppId) { %>
+    <button class="button" data-bind="click: auth.signin">Sign in with Facebook</button>
+<% } %>
+<% if (!facebookAppId) { %>
+    <!-- <button class="button" data-bind="click: auth.signin">Sign in with Facebook</button> -->
+<% } %>
 </div>

@@ -11,34 +11,48 @@ function Auth() {
 	self.editMode = ko.observable(false);
 
 	self.init = function() {
-		// var currentUser = Parse.User.current();
-		// if (currentUser) {
-		// 	self.currentUser(currentUser);
-		// 	if (currentUser.attributes.admin) {
-		// 		self.editMode(true);
-		// 	}
-		// }
+		var currentUser = Parse.User.current();
+		if (currentUser) {
+			self.currentUser(currentUser);
+		}
 	};
 
 	self.signin = function() {
-		// Parse.FacebookUtils.logIn(null, {
-		// 	success: function(user) {
-		// 		self.currentUser(user);
-		// 		if (user.attributes.admin == true) {
-		// 			self.editMode(true);
-		// 		}
-		// 	},
-		// 	error: function(user, error) {
-		// 		console.log("User cancelled the Facebook login or did not fully authorize.");
-		// 	}
-		// });
+
+<% if (facebookAppId) { %>
+		Parse.FacebookUtils.logIn(null, {
+			success: function(user) {
+				self.currentUser(user);
+				if (user.attributes.admin == true) {
+					self.editMode(true);
+				}
+			},
+			error: function(user, error) {
+				console.log("User cancelled the Facebook login or did not fully authorize.");
+			}
+		});
+
+<% } %>
+<% if (!facebookAppId) { %>
+    // Parse.FacebookUtils.logIn(null, {
+    //   success: function(user) {
+    //     self.currentUser(user);
+    //     if (user.attributes.admin == true) {
+    //       self.editMode(true);
+    //     }
+    //   },
+    //   error: function(user, error) {
+    //     console.log("User cancelled the Facebook login or did not fully authorize.");
+    //   }
+    // });
+
+<% } %>
 	};
 
 	self.signout = function() {
-		// Parse.User.logOut();
-		// self.currentUser(null);
-		// self.editMode(false);
-		// pager.navigate('');
+		Parse.User.logOut();
+		self.currentUser(null);
+		pager.navigate('');
 	};
 
 	self.init();

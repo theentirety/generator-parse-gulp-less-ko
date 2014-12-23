@@ -51,6 +51,9 @@ module.exports = yeoman.generators.Base.extend({
     },{
         name: 'parseMasterKey',
         message: 'What is the Parse.com master key?'
+    },{
+        name: 'facebookAppId',
+        message: 'What is the Facebook application id (optional)?'
     }
     ];
 
@@ -62,6 +65,7 @@ module.exports = yeoman.generators.Base.extend({
         this.parseAppName = this._.classify(props.appName);
         this.parseAppId = props.parseAppId;
         this.parseMasterKey = props.parseMasterKey;
+        this.facebookAppId = props.facebookAppId;
 
         done();
     }.bind(this));
@@ -92,7 +96,8 @@ module.exports = yeoman.generators.Base.extend({
           site_name: this.appName,
           site_prefix: this._.classify(this.appName),
           parse_appid: this.parseAppId,
-          parse_masterkey: this.parseMasterKey
+          parse_masterkey: this.parseMasterKey,
+          facebookAppId: this.facebookAppId
       };
 
       this.fs.copy(this.templatePath('_package.json'), this.destinationPath('package.json'));
