@@ -46,17 +46,9 @@ module.exports = yeoman.generators.Base.extend({
         message: 'Please go create your app on Parse.com. We\'ll wait here... ready?',
         default: true
     },{
-        when: function (response) {
-          return response.parseGoInstall;
-        },
-        type: 'confirm',
         name: 'parseAppId',
         message: 'What is the Parse.com application id?'
     },{
-        when: function (response) {
-          return response.parseGoInstall;
-        },
-        type: 'confirm',
         name: 'parseMasterKey',
         message: 'What is the Parse.com master key?'
     }

@@ -156,10 +156,6 @@ gulp.task('deploy', ['clean-deploy'], function () {
 gulp.task('connect', function() {
   gulp.src(buildFolder)
     .pipe($.webserver({
-      directoryListing: {
-        enable: true,
-        path: buildFolder
-      },
       port: 9000,
       livereload: true,
       open: true
