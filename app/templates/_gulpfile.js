@@ -9,7 +9,7 @@ var deployMode = false;
 // Load plugins
 var $ = require('gulp-load-plugins')();
 var mainBowerFiles = require('main-bower-files');
-console.log($)
+
 // Styles
 gulp.task('styles', ['vendor-styles'], function () {
   gulp.src('app/less/app.less')
@@ -25,15 +25,19 @@ gulp.task('styles', ['vendor-styles'], function () {
 
 // Styles
 gulp.task('vendor-styles', function () {
-  gulp.src('app/less/vendor/*.less')
-    .pipe($.less())
-    .pipe($.autoprefixer('last 1 version'))
-    .pipe($.if(deployMode, $.csso()))
-    .pipe($.if(deployMode, gulp.dest(distFolder + '/styles/vendor.css')))
-    .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles/vendor.css')))
-    .pipe($.size())
-    .pipe($.if(!deployMode, $.connect.reload()))
-    .on('error', $.util.log);
+  // uncomment this if you include vendor styles
+  // gulp.src([
+  //     'bower_components/getskeleton1200/skeleton1200.css'
+  //   ])
+  //   .pipe($.less())
+  //   .pipe($.concat('vendor.css'))
+  //   .pipe($.autoprefixer('last 1 version'))
+  //   .pipe($.if(deployMode, $.csso()))
+  //   .pipe($.if(deployMode, gulp.dest(distFolder + '/styles')))
+  //   .pipe($.if(!deployMode, gulp.dest(buildFolder + '/styles')))
+  //   .pipe($.size())
+  //   .pipe($.if(!deployMode, $.connect.reload()))
+  //   .on('error', $.util.log);
 });
 
 // Vendor Scripts

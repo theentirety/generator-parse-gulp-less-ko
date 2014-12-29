@@ -2,6 +2,8 @@
 * scripts/main.js
 */
 
+/* global $:false, ko:false, Parse:false, chrono:false, moment:false, document:false */
+
 'use strict';
 
 Parse.initialize('<%= parse_appid %>', '<%= parse_masterkey %>');
@@ -12,15 +14,14 @@ var app;
 <% if (facebookAppId) { %>
 
 window.fbAsyncInit = function() {
-    Parse.FacebookUtils.init({ // this line replaces FB.init({
-        appId      : '<%= facebookAppId %>', // Facebook App ID
-        status     : false, // check Facebook Login status
-        cookie     : true, // enable cookies to allow Parse to access the session
-        xfbml      : true,
-        version    : 'v2.1'
-    });
-
-    // Run code after the Facebook SDK is loaded.
+  Parse.FacebookUtils.init({ // this line replaces FB.init({
+    appId      : '<%= facebookAppId %>', // Facebook App ID
+    status     : false, // check Facebook Login status
+    cookie     : true, // enable cookies to allow Parse to access the session
+    xfbml      : true,
+    version    : 'v2.1'
+  });
+  // Run code after the Facebook SDK is loaded.
 };
 
 (function(d, s, id){
@@ -52,20 +53,20 @@ ko.bindingHandlers.fadeVisible = {
 ko.bindingHandlers.externalTemplates = {
   init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
 
-      var url = ko.unwrap(valueAccessor());
+    var url = ko.unwrap(valueAccessor());
 
-      $(element).hide();
+    $(element).hide();
 
-      $.ajax(url, {
-          success: function(data) {
-              $(element).prepend(data);
-              ko.applyBindingsToDescendants(bindingContext, element);
-              $(element).fadeIn('fast');
-          }
-      });
+    $.ajax(url, {
+        success: function(data) {
+            $(element).prepend(data);
+            ko.applyBindingsToDescendants(bindingContext, element);
+            $(element).fadeIn('fast');
+        }
+    });
 
-      // Also tell KO *not* to bind the descendants itself, otherwise they will be bound twice
-      return { controlsDescendantBindings: true };
+    // Also tell KO *not* to bind the descendants itself, otherwise they will be bound twice
+    return { controlsDescendantBindings: true };
   }
 };
 
